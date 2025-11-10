@@ -1,0 +1,6 @@
+### Check for all spglib symmetry database for 2759 structure 2D. All space group correctly find. 
+        All element found are validated, but didn't check if spglib missed to find some element.
+
+## TODO, add a standard cell prim_cell conversion for principal axis (of site or cell)
+    ### site's principal axis are in cartesian space. need to convert to spglib's (same as ase's) primitive cell basis.
+
