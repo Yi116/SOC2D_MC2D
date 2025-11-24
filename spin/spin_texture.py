@@ -1741,6 +1741,8 @@ def index_VB_assum_no_metal(lines : list[str],
     else:
         return -1, False
     
+# def sort_occupation_number():
+    
 ###### some function to read the nscf.out file from nscf calculation.
 
 def refind_path_from_k_point_weight_from_nscf_out(file_nscf_out : str):
@@ -1824,7 +1826,7 @@ def read_nscf_out_file(path, _file_='aiida.out'):
             lines = f.readlines()
     ## Boolean to indicate if the job (function) is done (at least one time, but it depend if they are completed).
     job_done_index_VB = False
-    n_bands_occupied = -1
+    # n_bands_occupied = -1
     job_read_G_vectors = False
     job_read_R_vectors = False
     job_read_lattice_para = False
@@ -1833,8 +1835,8 @@ def read_nscf_out_file(path, _file_='aiida.out'):
         
 
 
-        if not job_done_index_VB : ## just do it one time.
-            n_bands_occupied, job_done_index_VB = index_VB_assum_no_metal(lines, index)
+        # if not job_done_index_VB : ## just do it one time.
+        #     n_bands_occupied, job_done_index_VB = index_VB_assum_no_metal(lines, index)
         
         if not job_read_G_vectors : ## just do it one time.
             G_vectors, job_read_G_vectors = read_G_vectors(lines, index)
@@ -1843,7 +1845,7 @@ def read_nscf_out_file(path, _file_='aiida.out'):
         if not job_read_lattice_para :
             lattice_vec, job_read_lattice_para = read_lattice_para(lines, index)
 
-    return n_bands_occupied, G_vectors, R_vectors, lattice_vec
+    return G_vectors, R_vectors, lattice_vec
 
 
 
@@ -2667,18 +2669,18 @@ if __name__ == '__main__':
 # %% ## test parse_bands and parse_spins functions
     # path_mate = '/home/jyin/workspace/q-e-develop/qelocal/scratch_jy/MoS2Tempelate'
 
-    # struc_node = load_node('f2c23dd6-7ef1-4c6b-9bc9-973e63905a0d') # GeTe P3m1
-    # path_mate = load_node(519507).get_remote_path()
-    # path_nscf = '/home/jyin/workspace/scratch/ISDM_results/copied_from_26cc33fe-5994-4e72-bd1f-26b3691b4644/33fe-5994-4e72-bd1f-26b3691b4644' # GeTe P3m1
+    struc_node = load_node('f2c23dd6-7ef1-4c6b-9bc9-973e63905a0d') # GeTe P3m1
+    path_mate = load_node(519507).get_remote_path()
+    path_nscf = '/home/jyin/workspace/scratch/ISDM_results/copied_from_26cc33fe-5994-4e72-bd1f-26b3691b4644/33fe-5994-4e72-bd1f-26b3691b4644' # GeTe P3m1
     
     
     # struc_node = load_node('de5d09ce-bf2d-4ba9-87d7-f342b2a2a636') # As2O3 C6V
     # path_mate = load_node(519676).get_remote_path() ## As2O3 C6v
     # path_nscf = load_node(519670).get_remote_path() # As2O3 C6v nscf.out
 
-    struc_node = load_node('9be800e5-41ac-4875-8746-e10b6995cb8b') # AsSb C3v
-    path_mate = load_node(519677).get_remote_path() ## AsSb C3v bands output folder
-    path_nscf = load_node(519671).get_remote_path() # AsSb C3v nscf.out folder
+    # struc_node = load_node('9be800e5-41ac-4875-8746-e10b6995cb8b') # AsSb C3v
+    # path_mate = load_node(519677).get_remote_path() ## AsSb C3v bands output folder
+    # path_nscf = load_node(519671).get_remote_path() # AsSb C3v nscf.out folder
     bands_mate_1k_out_of_irrBZ, kpoints_mate_1k_out_of_irrBZ = parse_bands(path_mate, file='bands.dat')
     n_bands = bands_mate_1k_out_of_irrBZ.shape[0]
     spins_mate_1k_out_of_irrBZ = parse_spins(path_mate, list_bands=range(n_bands), _file_='bands.dat')
@@ -2699,7 +2701,7 @@ if __name__ == '__main__':
 
 # %%
     kpoints_mate = bands_data.get_kpoints() 
-    n_bands_occupied, G_vectors_mate, R_vectors_mate, lattic_vec = read_nscf_out_file(path_nscf, _file_='aiida.out')
+    G_vectors_mate, R_vectors_mate, lattic_vec = read_nscf_out_file(path_nscf, _file_='aiida.out')
 # %% parse high symmetry path in aiida.out in the out put RemoteData's path of bands.x calculation
 
     high_S_kpoints_dict = parse_high_symmetry_path(path_mate, file='aiida.out')
@@ -2883,4 +2885,5 @@ if __name__ == '__main__':
     # plt.axis('equal')
     # plt.show()
 # %%
-    
+    E_CB = bands_mate[n_bands_occupied:n_bands_occupied + 2, :]
+# %%
