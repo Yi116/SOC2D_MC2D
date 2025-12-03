@@ -1760,6 +1760,8 @@ def refind_path_from_k_point_weight_from_nscf_out(file_nscf_out : str):
 def read_G_vectors(lines, index):
     """
     in nscf.out file, read the reciprocal lattice vectors after line "reciprocal axes: (cart. coord. in units 2 pi/alat)"
+
+    shape : [a, b, c] where a, b, c vectors in lines.
     
     """
     G_vectors = [[]]
@@ -1777,6 +1779,8 @@ def read_G_vectors(lines, index):
 def read_R_vectors(lines, index):
     """
     in nscf.out file, read the direct lattice vectors after line "crystal axes: (cart. coord. in units of alat)"
+
+    shape [a, b, c] where a, b, c vectors in lines.
     """
     R_vectors = [[]]
     if lines[index].find("crystal axes") != -1:
@@ -1820,6 +1824,12 @@ def read_nscf_out_file(path, _file_='aiida.out'):
     -----
         path (str): Path to the directory containing scf.out file
     
+    Return :
+    -----
+        Until now, this function reads
+        G_vectors : Reciprocal lattice vectors in np.ndarray. Shape [a', b', c']
+        R_vectors : Lattice vectors in np.ndarray.  Shape  [a, b, c]
+        lattice_para : tuple of (number in float, unit in str)
     """
     with open(path+f'/{_file_}', 'r') as f:
             
@@ -1843,9 +1853,9 @@ def read_nscf_out_file(path, _file_='aiida.out'):
         if not job_read_R_vectors : ## just do it one time.
             R_vectors, job_read_R_vectors = read_R_vectors(lines, index)
         if not job_read_lattice_para :
-            lattice_vec, job_read_lattice_para = read_lattice_para(lines, index)
+            lattice_para, job_read_lattice_para = read_lattice_para(lines, index)
 
-    return G_vectors, R_vectors, lattice_vec
+    return G_vectors, R_vectors, lattice_para
 
 
 
@@ -2668,7 +2678,7 @@ if __name__ == '__main__':
 
 # %% ## test parse_bands and parse_spins functions
     # path_mate = '/home/jyin/workspace/q-e-develop/qelocal/scratch_jy/MoS2Tempelate'
-
+    n_bands_occupied = 30
     struc_node = load_node('f2c23dd6-7ef1-4c6b-9bc9-973e63905a0d') # GeTe P3m1
     path_mate = load_node(519507).get_remote_path()
     path_nscf = '/home/jyin/workspace/scratch/ISDM_results/copied_from_26cc33fe-5994-4e72-bd1f-26b3691b4644/33fe-5994-4e72-bd1f-26b3691b4644' # GeTe P3m1
